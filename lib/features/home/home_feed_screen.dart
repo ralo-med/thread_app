@@ -27,7 +27,7 @@ class HomeFeedScreen extends StatelessWidget {
             foregroundColor: Colors.black,
             surfaceTintColor: Colors.white,
             systemOverlayStyle: SystemUiOverlayStyle.dark,
-            title: const FaIcon(FontAwesomeIcons.threads, size: 28),
+            title: const FaIcon(FontAwesomeIcons.threads, size: 32),
           ),
           SliverToBoxAdapter(child: divider),
           SliverList.list(
