@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/participants_droplet_triad.dart';
 
-class ImagePostCard extends StatelessWidget {
+class ImagePostCard extends StatefulWidget {
   const ImagePostCard({
     super.key,
     required this.avatar,
@@ -11,7 +11,7 @@ class ImagePostCard extends StatelessWidget {
     required this.verified,
     required this.timeAgo,
     required this.text,
-    required this.image,
+    required this.images,
     required this.replies,
     required this.likes,
     this.showMuteBadge = false,
@@ -23,11 +23,40 @@ class ImagePostCard extends StatelessWidget {
   final bool verified;
   final String timeAgo;
   final String text;
-  final String image;
+  final List<String> images;
   final int replies;
   final int likes;
   final bool showMuteBadge;
   final List<String> participants;
+
+  @override
+  State<ImagePostCard> createState() => _ImagePostCardState();
+}
+
+class _ImagePostCardState extends State<ImagePostCard> {
+  final ScrollController _scrollController = ScrollController();
+  bool _isScrolling = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final isScrolling = _scrollController.offset > 0;
+    if (isScrolling != _isScrolling) {
+      setState(() {
+        _isScrolling = isScrolling;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +65,11 @@ class ImagePostCard extends StatelessWidget {
     const double gutterWidth = avatarSize + gutterSpacing;
 
     final subtle = TextStyle(color: Colors.grey.shade600);
+    final double screenWidth = MediaQuery.of(context).size.width;
+    const double horizontalPadding = 14;
+    final double contentWidth =
+        screenWidth - (horizontalPadding * 2) - gutterWidth;
+    final double imageHeight = contentWidth * 3 / 4;
 
     return Container(
       color: Colors.white,
@@ -57,7 +91,7 @@ class ImagePostCard extends StatelessWidget {
                         children: [
                           ClipOval(
                             child: CachedNetworkImage(
-                              imageUrl: avatar,
+                              imageUrl: widget.avatar,
                               width: avatarSize,
                               height: avatarSize,
                               fit: BoxFit.cover,
@@ -126,13 +160,13 @@ class ImagePostCard extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            name,
+                            widget.name,
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                             ),
                           ),
-                          if (verified) ...[
+                          if (widget.verified) ...[
                             const SizedBox(width: 6),
                             const Icon(
                               Icons.verified,
@@ -141,64 +175,170 @@ class ImagePostCard extends StatelessWidget {
                             ),
                           ],
                           const Spacer(),
-                          Text(timeAgo, style: subtle),
+                          Text(widget.timeAgo, style: subtle),
                           const SizedBox(width: 8),
                           const Icon(Icons.more_horiz, size: 20),
                         ],
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        text,
+                        widget.text,
                         style: const TextStyle(fontSize: 16, height: 1.3),
                       ),
                       const SizedBox(height: 10),
 
-                      // 이미지
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(14),
-                        child: Stack(
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 4 / 3,
-                              child: CachedNetworkImage(
-                                imageUrl: image,
-                                fit: BoxFit.cover,
-                                memCacheWidth: 800,
-                                memCacheHeight: 600,
-                                placeholder: (context, url) => Container(
-                                  color: Colors.grey.shade200,
-                                  child: const Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                                errorWidget: (context, url, error) => Container(
-                                  color: Colors.grey.shade200,
-                                  child: const Icon(Icons.error),
-                                ),
-                              ),
-                            ),
-                            if (showMuteBadge)
-                              Positioned(
-                                right: 8,
-                                bottom: 8,
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withValues(alpha: 0.6),
-                                    borderRadius: BorderRadius.circular(18),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(6),
-                                    child: Icon(
-                                      Icons.volume_off,
-                                      size: 18,
-                                      color: Colors.white,
+                      // 이미지들
+                      if (widget.images.isNotEmpty)
+                        SizedBox(
+                          height: imageHeight,
+                          child: widget.images.length == 1
+                              ? SizedBox(
+                                  width: contentWidth,
+                                  height: imageHeight,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(14),
+                                    child: Stack(
+                                      children: [
+                                        SizedBox.expand(
+                                          child: CachedNetworkImage(
+                                            imageUrl: widget.images[0],
+                                            fit: BoxFit.cover,
+                                            memCacheWidth: 800,
+                                            memCacheHeight: 600,
+                                            placeholder: (context, url) =>
+                                                Container(
+                                                  color: Colors.grey.shade200,
+                                                  child: const Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  ),
+                                                ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Container(
+                                                      color:
+                                                          Colors.grey.shade200,
+                                                      child: const Icon(
+                                                        Icons.error,
+                                                      ),
+                                                    ),
+                                          ),
+                                        ),
+                                        if (widget.showMuteBadge)
+                                          Positioned(
+                                            right: 8,
+                                            bottom: 8,
+                                            child: DecoratedBox(
+                                              decoration: BoxDecoration(
+                                                color: Colors.black.withValues(
+                                                  alpha: 0.6,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(18),
+                                              ),
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(6),
+                                                child: Icon(
+                                                  Icons.volume_off,
+                                                  size: 18,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                   ),
+                                )
+                              : SingleChildScrollView(
+                                  controller: _scrollController,
+                                  scrollDirection: Axis.horizontal,
+                                  clipBehavior: Clip.none,
+
+                                  child: Row(
+                                    children: widget.images.asMap().entries.map((
+                                      entry,
+                                    ) {
+                                      final index = entry.key;
+                                      final imageUrl = entry.value;
+                                      return Container(
+                                        width: contentWidth,
+                                        height: imageHeight,
+                                        margin: EdgeInsets.only(
+                                          right:
+                                              index < widget.images.length - 1
+                                              ? 8
+                                              : 0,
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              SizedBox.expand(
+                                                child: CachedNetworkImage(
+                                                  imageUrl: imageUrl,
+                                                  fit: BoxFit.cover,
+                                                  memCacheWidth: 800,
+                                                  memCacheHeight: 600,
+                                                  placeholder: (context, url) =>
+                                                      Container(
+                                                        color: Colors
+                                                            .grey
+                                                            .shade200,
+                                                        child: const Center(
+                                                          child:
+                                                              CircularProgressIndicator(),
+                                                        ),
+                                                      ),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Container(
+                                                            color: Colors
+                                                                .grey
+                                                                .shade200,
+                                                            child: const Icon(
+                                                              Icons.error,
+                                                            ),
+                                                          ),
+                                                ),
+                                              ),
+                                              if (widget.showMuteBadge)
+                                                Positioned(
+                                                  right: 8,
+                                                  bottom: 8,
+                                                  child: DecoratedBox(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.black
+                                                          .withValues(
+                                                            alpha: 0.6,
+                                                          ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            18,
+                                                          ),
+                                                    ),
+                                                    child: const Padding(
+                                                      padding: EdgeInsets.all(
+                                                        6,
+                                                      ),
+                                                      child: Icon(
+                                                        Icons.volume_off,
+                                                        size: 18,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
                                 ),
-                              ),
-                          ],
                         ),
-                      ),
                       const SizedBox(height: 12),
 
                       Row(
@@ -222,17 +362,22 @@ class ImagePostCard extends StatelessWidget {
           const SizedBox(height: 10),
 
           // 하단: 왼쪽 거터엔 물방울, 오른쪽엔 카운트 텍스트
-          if (participants.isNotEmpty || replies > 0 || likes > 0)
+          if (widget.participants.isNotEmpty ||
+              widget.replies > 0 ||
+              widget.likes > 0)
             Row(
               children: [
                 SizedBox(
                   width: gutterWidth,
                   child: Center(
-                    child: ParticipantsDropletTriad(urls: participants),
+                    child: ParticipantsDropletTriad(urls: widget.participants),
                   ),
                 ),
-                if (replies > 0 || likes > 0)
-                  Text('$replies replies · $likes likes', style: subtle),
+                if (widget.replies > 0 || widget.likes > 0)
+                  Text(
+                    '${widget.replies} replies · ${widget.likes} likes',
+                    style: subtle,
+                  ),
               ],
             ),
         ],

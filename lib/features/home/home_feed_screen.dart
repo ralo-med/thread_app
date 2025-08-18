@@ -38,8 +38,10 @@ class HomeFeedScreen extends StatelessWidget {
                 verified: true,
                 timeAgo: '2m',
                 text: 'Vine after seeing the Threads logo unveiled',
-                image:
-                    'https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?q=80&w=1974&auto=format&fit=crop',
+                images: [
+                  'https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?q=80&w=1974&auto=format&fit=crop',
+                  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop',
+                ],
                 replies: 36,
                 likes: 391,
                 showMuteBadge: true,
@@ -56,8 +58,9 @@ class HomeFeedScreen extends StatelessWidget {
                 verified: true,
                 timeAgo: '5m',
                 text: 'Elon alone on Twitter right now…',
-                image:
-                    'https://images.unsplash.com/photo-1520975916090-3105956dac38?q=80&w=2069&auto=format&fit=crop',
+                images: [
+                  'https://images.unsplash.com/photo-1520975916090-3105956dac38?q=80&w=2069&auto=format&fit=crop',
+                ],
                 replies: 0,
                 likes: 0,
                 participants: [],
@@ -111,8 +114,9 @@ class HomeFeedScreen extends StatelessWidget {
                 verified: true,
                 timeAgo: '2h',
                 text: 'How do you do, fellow kids?',
-                image:
-                    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop',
+                images: [
+                  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop',
+                ],
                 replies: 12,
                 likes: 89,
                 participants: [
