@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'features/home/home_feed_screen.dart';
+import 'components/new_thread_modal.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,9 +31,26 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   void _onTap(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 2) {
+      // 가운데 버튼 (새 스레드 작성)
+      _showNewThreadModal();
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  void _showNewThreadModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.6),
+      isScrollControlled: true,
+      enableDrag: true,
+      isDismissible: true,
+      builder: (context) => const NewThreadModal(),
+    );
   }
 
   @override

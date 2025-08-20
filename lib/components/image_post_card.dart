@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/participants_droplet_triad.dart';
+import 'action_modal.dart';
 
 class ImagePostCard extends StatefulWidget {
   const ImagePostCard({
@@ -56,6 +57,16 @@ class _ImagePostCardState extends State<ImagePostCard> {
         _isScrolling = isScrolling;
       });
     }
+  }
+
+  void _showActionSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.6),
+      isScrollControlled: true,
+      builder: (context) => const PostActionSheet(),
+    );
   }
 
   @override
@@ -177,7 +188,10 @@ class _ImagePostCardState extends State<ImagePostCard> {
                           const Spacer(),
                           Text(widget.timeAgo, style: subtle),
                           const SizedBox(width: 8),
-                          const Icon(Icons.more_horiz, size: 20),
+                          GestureDetector(
+                            onTap: () => _showActionSheet(context),
+                            child: const Icon(Icons.more_horiz, size: 20),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 10),

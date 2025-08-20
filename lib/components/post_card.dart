@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/participants_droplet_triad.dart';
+import 'action_modal.dart';
 
 class PostCard extends StatelessWidget {
   const PostCard({
@@ -24,6 +25,16 @@ class PostCard extends StatelessWidget {
   final int replies;
   final int likes;
   final List<String> participants;
+
+  void _showActionSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.6),
+      isScrollControlled: true,
+      builder: (context) => const PostActionSheet(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +150,10 @@ class PostCard extends StatelessWidget {
                           const Spacer(),
                           Text(timeAgo, style: subtle),
                           const SizedBox(width: 8),
-                          const Icon(Icons.more_horiz, size: 20),
+                          GestureDetector(
+                            onTap: () => _showActionSheet(context),
+                            child: const Icon(Icons.more_horiz, size: 20),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 10),
