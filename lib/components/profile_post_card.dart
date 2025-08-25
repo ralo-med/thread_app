@@ -10,6 +10,7 @@ class ProfilePostCard extends StatelessWidget {
     required this.timeAgo,
     required this.text,
     this.card,
+    this.isReply = false,
   });
 
   final String avatar;
@@ -17,129 +18,167 @@ class ProfilePostCard extends StatelessWidget {
   final String timeAgo;
   final String text;
   final Map<String, dynamic>? card;
+  final bool isReply;
 
   @override
   Widget build(BuildContext context) {
     const double avatarSize = 36;
     const double gutterSpacing = 12;
+    const double gutterWidth = avatarSize + gutterSpacing;
 
     final subtle = TextStyle(color: Colors.grey.shade600);
 
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 왼쪽: 아바타
-          avatar == 'plant_icon'
-              ? Container(
-                  width: avatarSize,
-                  height: avatarSize,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.grey.shade600, width: 0.5),
-                  ),
-                  child: CircleAvatar(
-                    radius: avatarSize / 2,
-                    backgroundColor: Colors.grey.shade200,
-                    child: const Icon(
-                      Icons.local_florist,
-                      color: Colors.green,
-                      size: 20,
-                    ),
-                  ),
-                )
-              : avatar == 'earth_icon'
-              ? Container(
-                  width: avatarSize,
-                  height: avatarSize,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.grey.shade600, width: 0.5),
-                  ),
-                  child: CircleAvatar(
-                    radius: avatarSize / 2,
-                    backgroundColor: Colors.grey.shade200,
-                    child: const Icon(
-                      Icons.public,
-                      color: Colors.blue,
-                      size: 20,
-                    ),
-                  ),
-                )
-              : ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: avatar,
-                    width: avatarSize,
-                    height: avatarSize,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      width: avatarSize,
-                      height: avatarSize,
-                      color: Colors.grey.shade200,
-                      child: const Icon(Icons.person, color: Colors.grey),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      width: avatarSize,
-                      height: avatarSize,
-                      color: Colors.grey.shade200,
-                      child: const Icon(Icons.person, color: Colors.grey),
-                    ),
-                  ),
-                ),
-          const SizedBox(width: gutterSpacing),
-
-          // 오른쪽 컨텐츠
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      username,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                        color: Colors.black,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 왼쪽: 아바타 + 세로선
+            SizedBox(
+              width: gutterWidth,
+              child: Column(
+                children: [
+                  // 아바타
+                  avatar == 'plant_icon'
+                      ? Container(
+                          width: avatarSize,
+                          height: avatarSize,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.grey.shade600,
+                              width: 0.5,
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            radius: avatarSize / 2,
+                            backgroundColor: Colors.grey.shade200,
+                            child: const Icon(
+                              Icons.local_florist,
+                              color: Colors.green,
+                              size: 20,
+                            ),
+                          ),
+                        )
+                      : avatar == 'earth_icon'
+                      ? Container(
+                          width: avatarSize,
+                          height: avatarSize,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.grey.shade600,
+                              width: 0.5,
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            radius: avatarSize / 2,
+                            backgroundColor: Colors.grey.shade200,
+                            child: const Icon(
+                              Icons.public,
+                              color: Colors.blue,
+                              size: 20,
+                            ),
+                          ),
+                        )
+                      : ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: avatar,
+                            width: avatarSize,
+                            height: avatarSize,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              width: avatarSize,
+                              height: avatarSize,
+                              color: Colors.grey.shade200,
+                              child: const Icon(
+                                Icons.person,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              width: avatarSize,
+                              height: avatarSize,
+                              color: Colors.grey.shade200,
+                              child: const Icon(
+                                Icons.person,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ),
+                  // 세로선 (답글이 아닐 때만 표시)
+                  if (!isReply) ...[
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Transform.translate(
+                          offset: const Offset(0, 12),
+                          child: Container(
+                            width: 2,
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
                       ),
                     ),
-                    const Spacer(),
-                    Text(timeAgo, style: subtle),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {},
-                      child: const Icon(Icons.more_horiz, size: 20),
-                    ),
                   ],
-                ),
-                const SizedBox(height: 2),
-                _buildRichText(text),
-
-                // 카드(선택)
-                if (card != null) ...[
-                  const SizedBox(height: 8),
-                  _LinkCard(card: card!),
                 ],
-
-                const SizedBox(height: 10),
-
-                Row(
-                  children: [
-                    const _ActionIcon(FontAwesomeIcons.heart),
-                    const SizedBox(width: 16),
-                    const _ActionIcon(FontAwesomeIcons.comment),
-                    const SizedBox(width: 16),
-                    const _ActionIcon(FontAwesomeIcons.arrowsRotate),
-                    const SizedBox(width: 16),
-                    const _ActionIcon(FontAwesomeIcons.paperPlane),
-                  ],
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+
+            // 오른쪽 컨텐츠
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        username,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(timeAgo, style: subtle),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () {},
+                        child: const Icon(Icons.more_horiz, size: 20),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  _buildRichText(text),
+
+                  // 카드(선택)
+                  if (card != null) ...[
+                    const SizedBox(height: 8),
+                    _LinkCard(card: card!),
+                  ],
+
+                  const SizedBox(height: 10),
+
+                  Row(
+                    children: [
+                      const _ActionIcon(FontAwesomeIcons.heart),
+                      const SizedBox(width: 16),
+                      const _ActionIcon(FontAwesomeIcons.comment),
+                      const SizedBox(width: 16),
+                      const _ActionIcon(FontAwesomeIcons.arrowsRotate),
+                      const SizedBox(width: 16),
+                      const _ActionIcon(FontAwesomeIcons.paperPlane),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

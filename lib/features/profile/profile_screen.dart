@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../components/profile_post_card.dart';
+import 'settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -119,7 +120,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             actions: [
               const FaIcon(FontAwesomeIcons.instagram, size: 24),
               const SizedBox(width: 16),
-              const Icon(CupertinoIcons.equal, size: 24),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsScreen(),
+                    ),
+                  );
+                },
+                child: const Icon(CupertinoIcons.equal, size: 24),
+              ),
               const SizedBox(width: 16),
             ],
           ),
@@ -320,6 +330,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             card: p['hasCard'] == true
                 ? p['card'] as Map<String, dynamic>
                 : null,
+            isReply: true, // Threads 탭에서는 세로선 숨김
           );
         },
       );
@@ -337,6 +348,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
         itemBuilder: (context, i) {
           final p = _replies[i];
+          // 같은 스레드에서 첫 번째 포스트가 원글, 나머지는 답글
+          bool isFirstInThread =
+              i == 0 ||
+              (i > 0 && _replies[i]['threadId'] != _replies[i - 1]['threadId']);
           return ProfilePostCard(
             avatar: p['avatar'] as String,
             username: p['username'] as String,
@@ -345,6 +360,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             card: p['hasCard'] == true
                 ? p['card'] as Map<String, dynamic>
                 : null,
+            isReply: !isFirstInThread,
           );
         },
       );
