@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'features/home/home_feed_screen.dart';
+import 'features/search/search_screen.dart';
+import 'features/activity/activity_screen.dart';
+import 'features/profile/profile_screen.dart';
 import 'components/new_thread_modal.dart';
 
 void main() {
@@ -63,18 +66,12 @@ class _MainScreenState extends State<MainScreen> {
             offstage: _selectedIndex != 0,
             child: const HomeFeedScreen(),
           ),
-          Offstage(
-            offstage: _selectedIndex != 1,
-            child: Container(), // TODO: Add DiscoverScreen
-          ),
+          Offstage(offstage: _selectedIndex != 1, child: const SearchScreen()),
           Offstage(
             offstage: _selectedIndex != 3,
-            child: Container(), // TODO: Add InboxScreen
+            child: const ActivityScreen(),
           ),
-          Offstage(
-            offstage: _selectedIndex != 4,
-            child: Container(), // TODO: Add ProfileScreen
-          ),
+          Offstage(offstage: _selectedIndex != 4, child: const ProfileScreen()),
         ],
       ),
       bottomNavigationBar: SafeArea(
