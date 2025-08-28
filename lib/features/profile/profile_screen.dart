@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../components/profile_post_card.dart';
+
+import '../../constants/sizes.dart';
 import 'settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -98,64 +100,128 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            pinned: true,
-            elevation: 0,
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            surfaceTintColor: Colors.white,
-            centerTitle: false,
-            systemOverlayStyle: SystemUiOverlayStyle.dark,
-            titleSpacing: 0,
-            title: const SizedBox.shrink(),
-            leading: const Icon(
-              CupertinoIcons.globe,
-              size: 24,
-              color: Colors.black,
-            ),
-            actions: [
-              const FaIcon(FontAwesomeIcons.instagram, size: 24),
-              const SizedBox(width: 16),
-              GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const SettingsScreen(),
-                    ),
-                  );
-                },
-                child: const Icon(CupertinoIcons.equal, size: 24),
-              ),
-              const SizedBox(width: 16),
-            ],
-          ),
-
-          SliverToBoxAdapter(child: _buildProfileHeader(context)),
-
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _TabsHeaderDelegate(
-              selectedIndex: _tabIndex,
-              onTap: (i) => setState(() => _tabIndex = i),
-            ),
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 6)),
-
-          _buildFeedSliver(),
-        ],
+    return SafeArea(
+      child: DefaultTabController(
+        length: 2,
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              _buildSliverAppBar(),
+              SliverToBoxAdapter(child: _buildProfileHeader(context)),
+              _buildSliverPersistentHeader(),
+            ];
+          },
+          body: _buildTabBarView(),
+        ),
       ),
+    );
+  }
+
+  Widget _buildSliverAppBar() {
+    return SliverAppBar(
+      pinned: true,
+      elevation: 0,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      surfaceTintColor: Colors.white,
+      centerTitle: false,
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      titleSpacing: 0,
+      title: const SizedBox.shrink(),
+      leading: const Icon(
+        CupertinoIcons.globe,
+        size: Sizes.size24,
+        color: Colors.black,
+      ),
+      actions: [
+        const FaIcon(FontAwesomeIcons.instagram, size: Sizes.size24),
+        const SizedBox(width: Sizes.size16),
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const SettingsScreen()),
+            );
+          },
+          child: const Icon(CupertinoIcons.equal, size: Sizes.size24),
+        ),
+        const SizedBox(width: Sizes.size16),
+      ],
+    );
+  }
+
+  Widget _buildSliverPersistentHeader() {
+    return SliverPersistentHeader(
+      pinned: true,
+      delegate: _TabsHeaderDelegate(
+        selectedIndex: _tabIndex,
+        onTap: (i) => setState(() => _tabIndex = i),
+      ),
+    );
+  }
+
+  Widget _buildTabBarView() {
+    return TabBarView(children: [_buildThreadsTab(), _buildRepliesTab()]);
+  }
+
+  Widget _buildThreadsTab() {
+    final items = _posts.where((e) => e['isReply'] == false).toList();
+    return ListView.separated(
+      itemCount: items.length,
+      separatorBuilder: (_, __) =>
+          Container(height: Sizes.size1, color: Colors.grey.shade200),
+      itemBuilder: (context, index) {
+        final p = items[index];
+        return ProfilePostCard(
+          avatar: p['avatar'] as String,
+          username: p['username'] as String,
+          timeAgo: p['time'] as String,
+          text: p['text'] as String,
+          card: p['hasCard'] == true ? p['card'] as Map<String, dynamic> : null,
+          isReply: true, // Threads 탭에서는 세로선 숨김
+        );
+      },
+    );
+  }
+
+  Widget _buildRepliesTab() {
+    return ListView.separated(
+      itemCount: _replies.length,
+      separatorBuilder: (_, i) {
+        // 같은 스레드 사이는 구분선 제거
+        bool sameThreadAsNext =
+            i < _replies.length - 1 &&
+            _replies[i]['threadId'] == _replies[i + 1]['threadId'];
+        return sameThreadAsNext
+            ? const SizedBox.shrink()
+            : Container(height: Sizes.size1, color: Colors.grey.shade200);
+      },
+      itemBuilder: (context, i) {
+        final p = _replies[i];
+        // 같은 스레드에서 첫 번째 포스트가 원글, 나머지는 답글
+        bool isFirstInThread =
+            i == 0 ||
+            (i > 0 && _replies[i]['threadId'] != _replies[i - 1]['threadId']);
+        return ProfilePostCard(
+          avatar: p['avatar'] as String,
+          username: p['username'] as String,
+          timeAgo: p['time'] as String,
+          text: p['text'] as String,
+          card: p['hasCard'] == true ? p['card'] as Map<String, dynamic> : null,
+          isReply: !isFirstInThread,
+        );
+      },
     );
   }
 
   Widget _buildProfileHeader(BuildContext context) {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      padding: const EdgeInsets.fromLTRB(
+        Sizes.size16,
+        Sizes.size8,
+        Sizes.size16,
+        Sizes.size16,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -169,33 +235,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const Text(
                       'Jane',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: Sizes.size28,
                         fontWeight: FontWeight.w800,
                         color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: Sizes.size6),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text(
                           'jane_mobbin',
-                          style: TextStyle(fontSize: 14, color: Colors.black87),
+                          style: TextStyle(
+                            fontSize: Sizes.size14,
+                            color: Colors.black87,
+                          ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: Sizes.size8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
+                            horizontal: Sizes.size8,
+                            vertical: Sizes.size3,
                           ),
                           decoration: BoxDecoration(
                             color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(Sizes.size12),
                           ),
                           child: const Text(
                             'threads.net',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: Sizes.size12,
                               color: Colors.black38,
                               fontWeight: FontWeight.w400,
                             ),
@@ -203,23 +272,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: Sizes.size10),
                     const Text(
                       'Plant enthusiast!',
-                      style: TextStyle(fontSize: 14, color: Colors.black),
+                      style: TextStyle(
+                        fontSize: Sizes.size14,
+                        color: Colors.black,
+                      ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: Sizes.size10),
 
                     Row(
                       children: [
                         SizedBox(
-                          height: 20,
+                          height: Sizes.size20,
                           child: Stack(
                             clipBehavior: Clip.none,
                             children: [
                               _tinyCircle(_miniFollower1),
                               Positioned(
-                                left: 14,
+                                left: Sizes.size14,
                                 child: _tinyCircle(_miniFollower2),
                               ),
                             ],
@@ -229,7 +301,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Text(
                           '2 followers',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: Sizes.size14,
                             color: Colors.grey.shade700,
                           ),
                         ),
@@ -240,26 +312,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
 
               SizedBox(
-                width: 64,
-                height: 64,
+                width: Sizes.size64,
+                height: Sizes.size64,
                 child: CircleAvatar(
-                  radius: 32,
+                  radius: Sizes.size32,
                   backgroundColor: Colors.grey.shade200,
                   child: const Icon(
                     Icons.local_florist,
                     color: Colors.green,
-                    size: 32,
+                    size: Sizes.size32,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Sizes.size16),
 
           Row(
             children: [
               Expanded(child: _whitePillButton('Edit profile', onTap: () {})),
-              const SizedBox(width: 10),
+              const SizedBox(width: Sizes.size10),
               Expanded(child: _whitePillButton('Share profile', onTap: () {})),
             ],
           ),
@@ -270,10 +342,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _tinyCircle(String url) {
     return Container(
-      width: 20,
-      height: 20,
+      width: Sizes.size20,
+      height: Sizes.size20,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.white, width: 2),
+        border: Border.all(color: Colors.white, width: Sizes.size2),
         shape: BoxShape.circle,
       ),
       child: ClipOval(
@@ -283,7 +355,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           placeholder: (c, _) => Container(color: Colors.grey.shade200),
           errorWidget: (c, u, e) => Container(
             color: Colors.grey.shade200,
-            child: const Icon(Icons.person, size: 12),
+            child: const Icon(Icons.person, size: Sizes.size12),
           ),
         ),
       ),
@@ -294,77 +366,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Sizes.size16,
+          vertical: Sizes.size8,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: Colors.grey.shade300, width: 1),
-          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.grey.shade300, width: Sizes.size1),
+          borderRadius: BorderRadius.circular(Sizes.size10),
         ),
         child: Text(
           text,
           textAlign: TextAlign.center,
           style: const TextStyle(
-            fontSize: 14,
+            fontSize: Sizes.size14,
             color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
     );
-  }
-
-  SliverList _buildFeedSliver() {
-    if (_tabIndex == 0) {
-      final items = _posts.where((e) => e['isReply'] == false).toList();
-      return SliverList.separated(
-        itemCount: items.length,
-        separatorBuilder: (_, __) =>
-            Container(height: 1, color: Colors.grey.shade200),
-        itemBuilder: (context, index) {
-          final p = items[index];
-          return ProfilePostCard(
-            avatar: p['avatar'] as String,
-            username: p['username'] as String,
-            timeAgo: p['time'] as String,
-            text: p['text'] as String,
-            card: p['hasCard'] == true
-                ? p['card'] as Map<String, dynamic>
-                : null,
-            isReply: true, // Threads 탭에서는 세로선 숨김
-          );
-        },
-      );
-    } else {
-      return SliverList.separated(
-        itemCount: _replies.length,
-        separatorBuilder: (_, i) {
-          // 같은 스레드 사이는 구분선 제거
-          bool sameThreadAsNext =
-              i < _replies.length - 1 &&
-              _replies[i]['threadId'] == _replies[i + 1]['threadId'];
-          return sameThreadAsNext
-              ? const SizedBox.shrink()
-              : Container(height: 1, color: Colors.grey.shade200);
-        },
-        itemBuilder: (context, i) {
-          final p = _replies[i];
-          // 같은 스레드에서 첫 번째 포스트가 원글, 나머지는 답글
-          bool isFirstInThread =
-              i == 0 ||
-              (i > 0 && _replies[i]['threadId'] != _replies[i - 1]['threadId']);
-          return ProfilePostCard(
-            avatar: p['avatar'] as String,
-            username: p['username'] as String,
-            timeAgo: p['time'] as String,
-            text: p['text'] as String,
-            card: p['hasCard'] == true
-                ? p['card'] as Map<String, dynamic>
-                : null,
-            isReply: !isFirstInThread,
-          );
-        },
-      );
-    }
   }
 }
 
@@ -385,7 +406,7 @@ class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
       child: Column(
         children: [
           SizedBox(
-            height: maxExtent - 2,
+            height: maxExtent - Sizes.size2,
             child: Row(
               children: [
                 _tabItem(context, 'Threads', 0),
@@ -393,7 +414,7 @@ class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
               ],
             ),
           ),
-          Container(height: 1, color: Colors.grey.shade200),
+          Container(height: Sizes.size1, color: Colors.grey.shade200),
         ],
       ),
     );
@@ -416,9 +437,9 @@ class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
                 color: isSelected ? Colors.black : Colors.grey.shade600,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: Sizes.size8),
             Container(
-              height: 2,
+              height: Sizes.size2,
               width: double.infinity,
               color: isSelected ? Colors.black : Colors.transparent,
             ),
@@ -429,10 +450,10 @@ class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => 44;
+  double get maxExtent => Sizes.size44;
 
   @override
-  double get minExtent => 44;
+  double get minExtent => Sizes.size44;
 
   @override
   bool shouldRebuild(_TabsHeaderDelegate oldDelegate) =>
