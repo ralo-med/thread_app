@@ -387,7 +387,7 @@ class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
         children: [
           SizedBox(
             height: maxExtent - Sizes.size2,
-            child: const TabBar(
+            child: TabBar(
               tabs: [
                 Tab(text: 'Threads'),
                 Tab(text: 'Replies'),
@@ -399,8 +399,12 @@ class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
-              indicatorColor: Colors.black,
-              indicatorWeight: Sizes.size2,
+              indicator: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: Colors.black, width: 1.0),
+                ),
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
             ),
           ),
           Container(height: Sizes.size1, color: Colors.grey.shade200),
