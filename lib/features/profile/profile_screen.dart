@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../components/profile_post_card.dart';
-
+import '../../constants/gaps.dart';
 import '../../constants/sizes.dart';
 import 'settings_screen.dart';
 
@@ -16,8 +16,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  int _tabIndex = 0; // 0: Threads, 1: Replies
-
   final _miniFollower1 = 'https://i.pravatar.cc/40?img=12';
   final _miniFollower2 = 'https://i.pravatar.cc/40?img=16';
 
@@ -106,110 +104,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
-              _buildSliverAppBar(),
+              SliverAppBar(
+                pinned: true,
+                elevation: 0,
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                surfaceTintColor: Colors.white,
+                centerTitle: false,
+                systemOverlayStyle: SystemUiOverlayStyle.dark,
+                titleSpacing: 0,
+                title: const SizedBox.shrink(),
+                leading: const Icon(
+                  CupertinoIcons.globe,
+                  size: Sizes.size24,
+                  color: Colors.black,
+                ),
+                actions: [
+                  const FaIcon(FontAwesomeIcons.instagram, size: Sizes.size24),
+                  const SizedBox(width: Sizes.size16),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsScreen(),
+                        ),
+                      );
+                    },
+                    child: const Icon(CupertinoIcons.equal, size: Sizes.size24),
+                  ),
+                  const SizedBox(width: Sizes.size16),
+                ],
+              ),
               SliverToBoxAdapter(child: _buildProfileHeader(context)),
-              _buildSliverPersistentHeader(),
+              SliverPersistentHeader(
+                delegate: _TabsHeaderDelegate(),
+                pinned: true,
+              ),
             ];
           },
-          body: _buildTabBarView(),
+          body: TabBarView(children: [_buildThreadsTab(), _buildRepliesTab()]),
         ),
       ),
-    );
-  }
-
-  Widget _buildSliverAppBar() {
-    return SliverAppBar(
-      pinned: true,
-      elevation: 0,
-      backgroundColor: Colors.white,
-      foregroundColor: Colors.black,
-      surfaceTintColor: Colors.white,
-      centerTitle: false,
-      systemOverlayStyle: SystemUiOverlayStyle.dark,
-      titleSpacing: 0,
-      title: const SizedBox.shrink(),
-      leading: const Icon(
-        CupertinoIcons.globe,
-        size: Sizes.size24,
-        color: Colors.black,
-      ),
-      actions: [
-        const FaIcon(FontAwesomeIcons.instagram, size: Sizes.size24),
-        const SizedBox(width: Sizes.size16),
-        GestureDetector(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const SettingsScreen()),
-            );
-          },
-          child: const Icon(CupertinoIcons.equal, size: Sizes.size24),
-        ),
-        const SizedBox(width: Sizes.size16),
-      ],
-    );
-  }
-
-  Widget _buildSliverPersistentHeader() {
-    return SliverPersistentHeader(
-      pinned: true,
-      delegate: _TabsHeaderDelegate(
-        selectedIndex: _tabIndex,
-        onTap: (i) => setState(() => _tabIndex = i),
-      ),
-    );
-  }
-
-  Widget _buildTabBarView() {
-    return TabBarView(children: [_buildThreadsTab(), _buildRepliesTab()]);
-  }
-
-  Widget _buildThreadsTab() {
-    final items = _posts.where((e) => e['isReply'] == false).toList();
-    return ListView.separated(
-      itemCount: items.length,
-      separatorBuilder: (_, __) =>
-          Container(height: Sizes.size1, color: Colors.grey.shade200),
-      itemBuilder: (context, index) {
-        final p = items[index];
-        return ProfilePostCard(
-          avatar: p['avatar'] as String,
-          username: p['username'] as String,
-          timeAgo: p['time'] as String,
-          text: p['text'] as String,
-          card: p['hasCard'] == true ? p['card'] as Map<String, dynamic> : null,
-          isReply: true, // Threads 탭에서는 세로선 숨김
-        );
-      },
-    );
-  }
-
-  Widget _buildRepliesTab() {
-    return ListView.separated(
-      itemCount: _replies.length,
-      separatorBuilder: (_, i) {
-        // 같은 스레드 사이는 구분선 제거
-        bool sameThreadAsNext =
-            i < _replies.length - 1 &&
-            _replies[i]['threadId'] == _replies[i + 1]['threadId'];
-        return sameThreadAsNext
-            ? const SizedBox.shrink()
-            : Container(height: Sizes.size1, color: Colors.grey.shade200);
-      },
-      itemBuilder: (context, i) {
-        final p = _replies[i];
-        // 같은 스레드에서 첫 번째 포스트가 원글, 나머지는 답글
-        bool isFirstInThread =
-            i == 0 ||
-            (i > 0 && _replies[i]['threadId'] != _replies[i - 1]['threadId']);
-        return ProfilePostCard(
-          avatar: p['avatar'] as String,
-          username: p['username'] as String,
-          timeAgo: p['time'] as String,
-          text: p['text'] as String,
-          card: p['hasCard'] == true ? p['card'] as Map<String, dynamic> : null,
-          isReply: !isFirstInThread,
-        );
-      },
     );
   }
 
@@ -272,7 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: Sizes.size10),
+                    Gaps.h10,
                     const Text(
                       'Plant enthusiast!',
                       style: TextStyle(
@@ -280,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: Sizes.size10),
+                    Gaps.h10,
 
                     Row(
                       children: [
@@ -331,7 +266,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Row(
             children: [
               Expanded(child: _whitePillButton('Edit profile', onTap: () {})),
-              const SizedBox(width: Sizes.size10),
+              Gaps.w10,
               Expanded(child: _whitePillButton('Share profile', onTap: () {})),
             ],
           ),
@@ -387,14 +322,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
+  Widget _buildThreadsTab() {
+    final items = _posts.where((e) => e['isReply'] == false).toList();
+    return ListView.separated(
+      itemCount: items.length,
+      separatorBuilder: (_, __) =>
+          Container(height: Sizes.size1, color: Colors.grey.shade200),
+      itemBuilder: (context, index) {
+        final p = items[index];
+        return ProfilePostCard(
+          avatar: p['avatar'] as String,
+          username: p['username'] as String,
+          timeAgo: p['time'] as String,
+          text: p['text'] as String,
+          card: p['hasCard'] == true ? p['card'] as Map<String, dynamic> : null,
+          isReply: true, // Threads 탭에서는 세로선 숨김
+        );
+      },
+    );
+  }
+
+  Widget _buildRepliesTab() {
+    return ListView.separated(
+      itemCount: _replies.length,
+      separatorBuilder: (_, i) {
+        // 같은 스레드 사이는 구분선 제거
+        bool sameThreadAsNext =
+            i < _replies.length - 1 &&
+            _replies[i]['threadId'] == _replies[i + 1]['threadId'];
+        return sameThreadAsNext
+            ? const SizedBox.shrink()
+            : Container(height: Sizes.size1, color: Colors.grey.shade200);
+      },
+      itemBuilder: (context, i) {
+        final p = _replies[i];
+        // 같은 스레드에서 첫 번째 포스트가 원글, 나머지는 답글
+        bool isFirstInThread =
+            i == 0 ||
+            (i > 0 && _replies[i]['threadId'] != _replies[i - 1]['threadId']);
+        return ProfilePostCard(
+          avatar: p['avatar'] as String,
+          username: p['username'] as String,
+          timeAgo: p['time'] as String,
+          text: p['text'] as String,
+          card: p['hasCard'] == true ? p['card'] as Map<String, dynamic> : null,
+          isReply: !isFirstInThread,
+        );
+      },
+    );
+  }
 }
 
 class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
-  _TabsHeaderDelegate({required this.selectedIndex, required this.onTap});
-
-  final int selectedIndex;
-  final ValueChanged<int> onTap;
-
   @override
   Widget build(
     BuildContext context,
@@ -407,44 +387,24 @@ class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
         children: [
           SizedBox(
             height: maxExtent - Sizes.size2,
-            child: Row(
-              children: [
-                _tabItem(context, 'Threads', 0),
-                _tabItem(context, 'Replies', 1),
+            child: const TabBar(
+              tabs: [
+                Tab(text: 'Threads'),
+                Tab(text: 'Replies'),
               ],
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.grey,
+              labelStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+              unselectedLabelStyle: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+              indicatorColor: Colors.black,
+              indicatorWeight: Sizes.size2,
             ),
           ),
           Container(height: Sizes.size1, color: Colors.grey.shade200),
         ],
-      ),
-    );
-  }
-
-  Widget _tabItem(BuildContext context, String label, int index) {
-    final isSelected = selectedIndex == index;
-    return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => onTap(index),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                color: isSelected ? Colors.black : Colors.grey.shade600,
-              ),
-            ),
-            const SizedBox(height: Sizes.size8),
-            Container(
-              height: Sizes.size2,
-              width: double.infinity,
-              color: isSelected ? Colors.black : Colors.transparent,
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -456,6 +416,5 @@ class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => Sizes.size44;
 
   @override
-  bool shouldRebuild(_TabsHeaderDelegate oldDelegate) =>
-      oldDelegate.selectedIndex != selectedIndex;
+  bool shouldRebuild(_TabsHeaderDelegate oldDelegate) => false;
 }
