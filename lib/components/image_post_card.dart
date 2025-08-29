@@ -83,6 +83,7 @@ class _ImagePostCardState extends State<ImagePostCard> {
     final double imageHeight = contentWidth * 3 / 4;
 
     return Container(
+      key: ValueKey('${widget.name}_${widget.timeAgo}'),
       color: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Column(
@@ -268,7 +269,6 @@ class _ImagePostCardState extends State<ImagePostCard> {
                                   controller: _scrollController,
                                   scrollDirection: Axis.horizontal,
                                   clipBehavior: Clip.none,
-
                                   child: Row(
                                     children: widget.images.asMap().entries.map((
                                       entry,
