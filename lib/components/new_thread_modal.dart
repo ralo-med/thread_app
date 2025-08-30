@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'camera_library_sheet.dart';
+import '../theme.dart';
 
 class NewThreadModal extends StatefulWidget {
   const NewThreadModal({super.key});
@@ -132,18 +133,21 @@ class _NewThreadModalState extends State<NewThreadModal> {
     const double leftMinHeight =
         avatarDia + gapTop + minLine + gapBottom + tailIcon; // 164
 
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
+
     return Container(
       height: size.height * 0.90,
       clipBehavior: Clip.hardEdge,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(22),
           topRight: Radius.circular(22),
         ),
       ),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: colors.surface,
         resizeToAvoidBottomInset: true,
         body: GestureDetector(
           onTap: _stopWriting,

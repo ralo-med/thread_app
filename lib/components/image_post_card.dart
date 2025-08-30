@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/participants_droplet_triad.dart';
 import 'action_modal.dart';
+import '../theme.dart';
 
 class ImagePostCard extends StatefulWidget {
   const ImagePostCard({
@@ -75,7 +76,13 @@ class _ImagePostCardState extends State<ImagePostCard> {
     const double gutterSpacing = 12;
     const double gutterWidth = avatarSize + gutterSpacing;
 
-    final subtle = TextStyle(color: Colors.grey.shade600);
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
+    final subtle = TextStyle(
+      color: theme.brightness == Brightness.dark
+          ? Colors.grey.shade400
+          : Colors.grey.shade600,
+    );
     final double screenWidth = MediaQuery.of(context).size.width;
     const double horizontalPadding = 14;
     final double contentWidth =
@@ -84,7 +91,7 @@ class _ImagePostCardState extends State<ImagePostCard> {
 
     return Container(
       key: UniqueKey(),
-      color: Colors.white,
+      color: colors.surface,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,7 +164,9 @@ class _ImagePostCardState extends State<ImagePostCard> {
                           alignment: Alignment.topCenter,
                           child: Container(
                             width: 2,
-                            color: Colors.grey.shade300,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.grey.shade700
+                                : Colors.grey.shade300,
                           ),
                         ),
                       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../theme.dart';
 import '../widgets/participants_droplet_triad.dart';
 import 'action_modal.dart';
 
@@ -42,10 +43,16 @@ class PostCard extends StatelessWidget {
     const double gutterSpacing = 12;
     const double gutterWidth = avatarSize + gutterSpacing;
 
-    final subtle = TextStyle(color: Colors.grey.shade600);
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
+    final subtle = TextStyle(
+      color: theme.brightness == Brightness.dark
+          ? Colors.grey.shade400
+          : Colors.grey.shade600,
+    );
 
     return Container(
-      color: Colors.white,
+      color: colors.surface,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +78,9 @@ class PostCard extends StatelessWidget {
                               placeholder: (context, url) => Container(
                                 width: avatarSize,
                                 height: avatarSize,
-                                color: Colors.grey.shade200,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.grey.shade800
+                                    : Colors.grey.shade200,
                                 child: const Icon(
                                   Icons.person,
                                   color: Colors.grey,
@@ -80,7 +89,9 @@ class PostCard extends StatelessWidget {
                               errorWidget: (context, url, error) => Container(
                                 width: avatarSize,
                                 height: avatarSize,
-                                color: Colors.grey.shade200,
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.grey.shade800
+                                    : Colors.grey.shade200,
                                 child: const Icon(
                                   Icons.person,
                                   color: Colors.grey,

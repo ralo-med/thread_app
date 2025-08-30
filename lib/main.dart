@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'theme.dart';
 import 'features/home/home_feed_screen.dart';
 import 'features/search/search_screen.dart';
 import 'features/activity/activity_screen.dart';
@@ -17,7 +18,27 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Thread App',
-      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+      themeMode: ThemeMode.system,
+      theme: ThemeData(
+        useMaterial3: true,
+        textTheme: Typography.blackMountainView,
+        scaffoldBackgroundColor: AppColors.light.surface,
+        brightness: Brightness.light,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        splashFactory: NoSplash.splashFactory,
+        extensions: const <ThemeExtension<dynamic>>[AppColors.light],
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        textTheme: Typography.whiteMountainView,
+        scaffoldBackgroundColor: AppColors.dark.surface,
+        brightness: Brightness.dark,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        splashFactory: NoSplash.splashFactory,
+        extensions: const <ThemeExtension<dynamic>>[AppColors.dark],
+      ),
       home: const MainScreen(),
     );
   }

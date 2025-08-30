@@ -19,6 +19,7 @@ class NavTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -26,14 +27,26 @@ class NavTab extends StatelessWidget {
         children: [
           FaIcon(
             isSelected ? selectedIcon : icon,
-            color: isSelected ? Colors.black : Colors.grey.shade600,
+            color: isSelected
+                ? (theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black)
+                : (theme.brightness == Brightness.dark
+                      ? Colors.grey.shade400
+                      : Colors.grey.shade600),
             size: 24,
           ),
           const SizedBox(height: 4),
           Text(
             text,
             style: TextStyle(
-              color: isSelected ? Colors.black : Colors.grey.shade600,
+              color: isSelected
+                  ? (theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black)
+                  : (theme.brightness == Brightness.dark
+                        ? Colors.grey.shade400
+                        : Colors.grey.shade600),
               fontSize: 12,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
             ),

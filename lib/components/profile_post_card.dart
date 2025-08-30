@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../theme.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfilePostCard extends StatelessWidget {
@@ -26,10 +27,16 @@ class ProfilePostCard extends StatelessWidget {
     const double gutterSpacing = 12;
     const double gutterWidth = avatarSize + gutterSpacing;
 
-    final subtle = TextStyle(color: Colors.grey.shade600);
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
+    final subtle = TextStyle(
+      color: theme.brightness == Brightness.dark
+          ? Colors.grey.shade400
+          : Colors.grey.shade600,
+    );
 
     return Container(
-      color: Colors.white,
+      color: colors.surface,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       child: IntrinsicHeight(
         child: Row(

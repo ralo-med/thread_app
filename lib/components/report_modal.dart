@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../theme.dart';
 
 class ReportModal extends StatelessWidget {
   const ReportModal({super.key});
@@ -10,10 +11,13 @@ class ReportModal extends StatelessWidget {
     const double horizontalPadding = 16.0;
 
     final size = MediaQuery.of(context).size;
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
+
     return Container(
       height: size.height * 0.65,
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: colors.surface,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(radius),
           topRight: Radius.circular(radius),
@@ -47,7 +51,13 @@ class ReportModal extends StatelessWidget {
           const SizedBox(height: 12),
 
           // 구분선
-          Divider(height: 1, thickness: 1, color: Colors.grey.shade200),
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: theme.brightness == Brightness.dark
+                ? Colors.grey.shade700
+                : Colors.grey.shade200,
+          ),
           const SizedBox(height: 12),
 
           // 질문
@@ -78,7 +88,13 @@ class ReportModal extends StatelessWidget {
           const SizedBox(height: 20),
 
           // 구분선
-          Divider(height: 1, thickness: 1, color: Colors.grey.shade200),
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: theme.brightness == Brightness.dark
+                ? Colors.grey.shade700
+                : Colors.grey.shade200,
+          ),
           const SizedBox(height: 8),
 
           // 스크롤 가능한 신고 옵션들

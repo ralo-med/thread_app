@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../theme.dart';
 import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -181,10 +182,13 @@ class _CameraLibrarySheetState extends State<_CameraLibrarySheet>
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
 
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>();
+
     return SizedBox(
       height: height, // 전체 화면
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: colors?.surface ?? Colors.black,
         body: Column(
           children: [
             // 카메라 or 라이브러리 컨텐츠 - 상단 여백 제거

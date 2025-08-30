@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'report_modal.dart';
+import '../theme.dart';
 
 class PostActionSheet extends StatelessWidget {
   const PostActionSheet({super.key});
@@ -18,8 +19,14 @@ class PostActionSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const double radius = 22.0;
-    final Color bgColor = Colors.grey.shade100;
-    final Color dividerColor = Colors.grey.shade300;
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
+    final Color bgColor = theme.brightness == Brightness.dark
+        ? Colors.grey.shade900
+        : Colors.grey.shade100;
+    final Color dividerColor = theme.brightness == Brightness.dark
+        ? Colors.grey.shade700
+        : Colors.grey.shade300;
 
     Widget buildActionGroup(List<ActionSpec> items) {
       return Container(
@@ -46,9 +53,9 @@ class PostActionSheet extends StatelessWidget {
     }
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(22),
           topRight: Radius.circular(22),
         ),

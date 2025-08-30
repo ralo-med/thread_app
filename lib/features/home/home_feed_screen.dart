@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../theme.dart';
 import '../../components/post_card.dart';
 import '../../components/image_post_card.dart';
 
@@ -9,24 +10,32 @@ class HomeFeedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
     final divider = Divider(
       height: 1,
       thickness: 1,
-      color: Colors.grey.shade200,
+      color: theme.brightness == Brightness.dark
+          ? Colors.grey.shade800
+          : Colors.grey.shade200,
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colors.surface,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             pinned: true,
             centerTitle: true,
             elevation: 0,
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            surfaceTintColor: Colors.white,
-            systemOverlayStyle: SystemUiOverlayStyle.dark,
+            backgroundColor: colors.surface,
+            foregroundColor: theme.brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+            surfaceTintColor: colors.surface,
+            systemOverlayStyle: theme.brightness == Brightness.dark
+                ? SystemUiOverlayStyle.light
+                : SystemUiOverlayStyle.dark,
             title: const FaIcon(FontAwesomeIcons.threads, size: 32),
           ),
           SliverToBoxAdapter(child: divider),
