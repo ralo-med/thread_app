@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../theme.dart';
 import '../../components/profile_post_card.dart';
 import '../../constants/gaps.dart';
 import '../../constants/sizes.dart';
@@ -98,6 +99,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
+
     return SafeArea(
       child: DefaultTabController(
         length: 2,
@@ -107,20 +111,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
               SliverAppBar(
                 pinned: true,
                 elevation: 0,
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                surfaceTintColor: Colors.white,
+                backgroundColor: colors.surface,
+                foregroundColor: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
+                surfaceTintColor: colors.surface,
                 centerTitle: false,
-                systemOverlayStyle: SystemUiOverlayStyle.dark,
+                systemOverlayStyle: theme.brightness == Brightness.dark
+                    ? SystemUiOverlayStyle.light
+                    : SystemUiOverlayStyle.dark,
                 titleSpacing: 0,
                 title: const SizedBox.shrink(),
-                leading: const Icon(
+                leading: Icon(
                   CupertinoIcons.globe,
                   size: Sizes.size24,
-                  color: Colors.black,
+                  color: theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
                 ),
                 actions: [
-                  const FaIcon(FontAwesomeIcons.instagram, size: Sizes.size24),
+                  FaIcon(
+                    FontAwesomeIcons.instagram,
+                    size: Sizes.size24,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : null,
+                  ),
                   const SizedBox(width: Sizes.size16),
                   GestureDetector(
                     onTap: () {
@@ -130,7 +146,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       );
                     },
-                    child: const Icon(CupertinoIcons.equal, size: Sizes.size24),
+                    child: Icon(
+                      CupertinoIcons.equal,
+                      size: Sizes.size24,
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.white
+                          : null,
+                    ),
                   ),
                   const SizedBox(width: Sizes.size16),
                 ],
@@ -149,8 +171,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfileHeader(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
+
     return Container(
-      color: Colors.white,
+      color: colors.surface,
       padding: const EdgeInsets.fromLTRB(
         Sizes.size16,
         Sizes.size8,
@@ -167,23 +192,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Jane',
                       style: TextStyle(
                         fontSize: Sizes.size28,
                         fontWeight: FontWeight.w800,
-                        color: Colors.black,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
                       ),
                     ),
                     const SizedBox(height: Sizes.size6),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
+                        Text(
                           'jane_mobbin',
                           style: TextStyle(
                             fontSize: Sizes.size14,
-                            color: Colors.black87,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white70
+                                : Colors.black87,
                           ),
                         ),
                         const SizedBox(width: Sizes.size8),
@@ -193,14 +222,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             vertical: Sizes.size3,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.grey.shade800
+                                : Colors.grey.shade100,
                             borderRadius: BorderRadius.circular(Sizes.size12),
                           ),
-                          child: const Text(
+                          child: Text(
                             'threads.net',
                             style: TextStyle(
                               fontSize: Sizes.size12,
-                              color: Colors.black38,
+                              color: theme.brightness == Brightness.dark
+                                  ? Colors.white54
+                                  : Colors.black38,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -208,11 +241,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                     Gaps.h10,
-                    const Text(
+                    Text(
                       'Plant enthusiast!',
                       style: TextStyle(
                         fontSize: Sizes.size14,
-                        color: Colors.black,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
                       ),
                     ),
                     Gaps.h10,
@@ -237,7 +272,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           '2 followers',
                           style: TextStyle(
                             fontSize: Sizes.size14,
-                            color: Colors.grey.shade700,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.grey.shade400
+                                : Colors.grey.shade700,
                           ),
                         ),
                       ],
@@ -251,7 +288,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 height: Sizes.size64,
                 child: CircleAvatar(
                   radius: Sizes.size32,
-                  backgroundColor: Colors.grey.shade200,
+                  backgroundColor: theme.brightness == Brightness.dark
+                      ? Colors.grey.shade800
+                      : Colors.grey.shade200,
                   child: const Icon(
                     Icons.local_florist,
                     color: Colors.green,
@@ -265,9 +304,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           Row(
             children: [
-              Expanded(child: _whitePillButton('Edit profile', onTap: () {})),
+              Expanded(
+                child: _whitePillButton(
+                  'Edit profile',
+                  onTap: () {},
+                  theme: theme,
+                  colors: colors,
+                ),
+              ),
               Gaps.w10,
-              Expanded(child: _whitePillButton('Share profile', onTap: () {})),
+              Expanded(
+                child: _whitePillButton(
+                  'Share profile',
+                  onTap: () {},
+                  theme: theme,
+                  colors: colors,
+                ),
+              ),
             ],
           ),
         ],
@@ -287,17 +340,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: CachedNetworkImage(
           imageUrl: url,
           fit: BoxFit.cover,
-          placeholder: (c, _) => Container(color: Colors.grey.shade200),
-          errorWidget: (c, u, e) => Container(
-            color: Colors.grey.shade200,
-            child: const Icon(Icons.person, size: Sizes.size12),
-          ),
+          placeholder: (c, _) {
+            final th = Theme.of(c);
+            return Container(
+              color: th.brightness == Brightness.dark
+                  ? Colors.grey.shade800
+                  : Colors.grey.shade200,
+            );
+          },
+          errorWidget: (c, u, e) {
+            final th = Theme.of(c);
+            return Container(
+              color: th.brightness == Brightness.dark
+                  ? Colors.grey.shade800
+                  : Colors.grey.shade200,
+              child: Icon(
+                Icons.person,
+                size: Sizes.size12,
+                color: th.brightness == Brightness.dark
+                    ? Colors.white54
+                    : Colors.grey,
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _whitePillButton(String text, {VoidCallback? onTap}) {
+  Widget _whitePillButton(
+    String text, {
+    VoidCallback? onTap,
+    ThemeData? theme,
+    AppColors? colors,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -306,16 +382,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
           vertical: Sizes.size8,
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.grey.shade300, width: Sizes.size1),
+          color: (theme ?? Theme.of(context)).brightness == Brightness.dark
+              ? (colors ?? (theme ?? Theme.of(context)).extension<AppColors>()!)
+                    .surface
+              : Colors.white,
+          border: Border.all(
+            color: (theme ?? Theme.of(context)).brightness == Brightness.dark
+                ? Colors.grey.shade700
+                : Colors.grey.shade300,
+            width: Sizes.size1,
+          ),
           borderRadius: BorderRadius.circular(Sizes.size10),
         ),
         child: Text(
           text,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: Sizes.size14,
-            color: Colors.black,
+            color: (theme ?? Theme.of(context)).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -324,11 +410,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildThreadsTab() {
+    final theme = Theme.of(context);
     final items = _posts.where((e) => e['isReply'] == false).toList();
     return ListView.separated(
       itemCount: items.length,
-      separatorBuilder: (_, __) =>
-          Container(height: Sizes.size1, color: Colors.grey.shade200),
+      separatorBuilder: (_, __) => Container(
+        height: Sizes.size1,
+        color: theme.brightness == Brightness.dark
+            ? Colors.grey.shade700
+            : Colors.grey.shade200,
+      ),
       itemBuilder: (context, index) {
         final p = items[index];
         return ProfilePostCard(
@@ -344,6 +435,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildRepliesTab() {
+    final theme = Theme.of(context);
     return ListView.separated(
       itemCount: _replies.length,
       separatorBuilder: (_, i) {
@@ -353,7 +445,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _replies[i]['threadId'] == _replies[i + 1]['threadId'];
         return sameThreadAsNext
             ? const SizedBox.shrink()
-            : Container(height: Sizes.size1, color: Colors.grey.shade200);
+            : Container(
+                height: Sizes.size1,
+                color: theme.brightness == Brightness.dark
+                    ? Colors.grey.shade700
+                    : Colors.grey.shade200,
+              );
       },
       itemBuilder: (context, i) {
         final p = _replies[i];
@@ -381,8 +478,11 @@ class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
+
     return Container(
-      color: Colors.white,
+      color: colors.surface,
       child: Column(
         children: [
           SizedBox(
@@ -392,8 +492,12 @@ class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
                 Tab(text: 'Threads'),
                 Tab(text: 'Replies'),
               ],
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
+              labelColor: theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
+              unselectedLabelColor: theme.brightness == Brightness.dark
+                  ? Colors.grey.shade400
+                  : Colors.grey,
               labelStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
               unselectedLabelStyle: TextStyle(
                 fontSize: 15,
@@ -401,13 +505,23 @@ class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
               ),
               indicator: BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(color: Colors.black, width: 1.0),
+                  bottom: BorderSide(
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                    width: 1.0,
+                  ),
                 ),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
             ),
           ),
-          Container(height: Sizes.size1, color: Colors.grey.shade200),
+          Container(
+            height: Sizes.size1,
+            color: theme.brightness == Brightness.dark
+                ? Colors.grey.shade700
+                : Colors.grey.shade200,
+          ),
         ],
       ),
     );
@@ -420,5 +534,5 @@ class _TabsHeaderDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => Sizes.size44;
 
   @override
-  bool shouldRebuild(_TabsHeaderDelegate oldDelegate) => false;
+  bool shouldRebuild(_TabsHeaderDelegate oldDelegate) => true;
 }

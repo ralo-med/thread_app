@@ -125,7 +125,9 @@ class ProfilePostCard extends StatelessWidget {
                           offset: const Offset(0, 12),
                           child: Container(
                             width: 2,
-                            color: Colors.grey.shade300,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.grey.shade700
+                                : Colors.grey.shade300,
                           ),
                         ),
                       ),
@@ -144,10 +146,12 @@ class ProfilePostCard extends StatelessWidget {
                     children: [
                       Text(
                         username,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 15,
-                          color: Colors.black,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
                         ),
                       ),
                       const Spacer(),
@@ -160,7 +164,7 @@ class ProfilePostCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 2),
-                  _buildRichText(text),
+                  _buildRichText(text, theme),
 
                   // 카드(선택)
                   if (card != null) ...[
@@ -190,7 +194,7 @@ class ProfilePostCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRichText(String text) {
+  Widget _buildRichText(String text, ThemeData theme) {
     final List<TextSpan> spans = [];
     final RegExp mentionRegex = RegExp(r'@\w+');
     int lastIndex = 0;
@@ -201,7 +205,12 @@ class ProfilePostCard extends StatelessWidget {
         spans.add(
           TextSpan(
             text: text.substring(lastIndex, match.start),
-            style: const TextStyle(fontSize: 15, color: Colors.black),
+            style: TextStyle(
+              fontSize: 15,
+              color: theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
+            ),
           ),
         );
       }
@@ -222,7 +231,12 @@ class ProfilePostCard extends StatelessWidget {
       spans.add(
         TextSpan(
           text: text.substring(lastIndex),
-          style: const TextStyle(fontSize: 15, color: Colors.black),
+          style: TextStyle(
+            fontSize: 15,
+            color: theme.brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+          ),
         ),
       );
     }
@@ -238,10 +252,15 @@ class _LinkCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        color: Colors.white,
+        border: Border.all(
+          color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+        ),
+        color: isDark ? const Color(0xFF0B0B0C) : Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -292,13 +311,20 @@ class _LinkCard extends StatelessWidget {
                         ),
                       ),
                 const SizedBox(width: 8),
-                Text(
-                  card['name'] as String,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                    color: Colors.black,
-                  ),
+                Builder(
+                  builder: (context) {
+                    final th = Theme.of(context);
+                    return Text(
+                      card['name'] as String,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        color: th.brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    );
+                  },
                 ),
                 if (card['verified'] == true) ...[
                   const SizedBox(width: 4),
@@ -313,7 +339,10 @@ class _LinkCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
               card['snippet'] as String,
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade800),
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? Colors.grey.shade300 : Colors.grey.shade800,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -326,7 +355,10 @@ class _LinkCard extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
               child: Text(
                 card['replies'] as String,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                ),
               ),
             ),
           ] else ...[
@@ -339,10 +371,14 @@ class _LinkCard extends StatelessWidget {
               child: CachedNetworkImage(
                 imageUrl: card['image'] as String,
                 fit: BoxFit.cover,
-                placeholder: (c, _) =>
-                    Container(height: 160, color: Colors.grey.shade200),
-                errorWidget: (c, u, e) =>
-                    Container(height: 160, color: Colors.grey.shade200),
+                placeholder: (c, _) => Container(
+                  height: 160,
+                  color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+                ),
+                errorWidget: (c, u, e) => Container(
+                  height: 160,
+                  color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+                ),
               ),
             ),
           ],
