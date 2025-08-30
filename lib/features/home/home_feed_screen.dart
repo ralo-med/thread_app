@@ -16,7 +16,7 @@ class HomeFeedScreen extends StatelessWidget {
       height: 1,
       thickness: 1,
       color: theme.brightness == Brightness.dark
-          ? Colors.grey.shade800
+          ? Colors.grey.shade700
           : Colors.grey.shade200,
     );
 
@@ -145,6 +145,13 @@ class HomeFeedScreen extends StatelessWidget {
 class _FeedDivider extends StatelessWidget {
   const _FeedDivider();
   @override
-  Widget build(BuildContext context) =>
-      Container(height: 1, color: Colors.grey.shade200);
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      height: 1,
+      color: theme.brightness == Brightness.dark
+          ? Colors.grey.shade700
+          : Colors.grey.shade200,
+    );
+  }
 }

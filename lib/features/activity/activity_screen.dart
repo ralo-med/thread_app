@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../theme.dart';
 
 class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key});
@@ -16,8 +17,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colors.surface,
       body: CustomScrollView(
         slivers: [
           // 앱바
@@ -25,16 +29,22 @@ class _ActivityScreenState extends State<ActivityScreen> {
             pinned: true,
             centerTitle: false,
             elevation: 0,
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            surfaceTintColor: Colors.white,
-            systemOverlayStyle: SystemUiOverlayStyle.dark,
-            title: const Text(
+            backgroundColor: colors.surface,
+            foregroundColor: theme.brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+            surfaceTintColor: colors.surface,
+            systemOverlayStyle: theme.brightness == Brightness.dark
+                ? SystemUiOverlayStyle.light
+                : SystemUiOverlayStyle.dark,
+            title: Text(
               'Activity',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
               ),
             ),
             bottom: PreferredSize(
@@ -64,9 +74,15 @@ class _ActivityScreenState extends State<ActivityScreen> {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: isSelected ? Colors.black : Colors.white,
+                            color: isSelected
+                                ? (theme.brightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black)
+                                : colors.surface,
                             border: Border.all(
-                              color: Colors.grey.shade300,
+                              color: theme.brightness == Brightness.dark
+                                  ? Colors.grey.shade700
+                                  : Colors.grey.shade300,
                               width: 1,
                             ),
                             borderRadius: BorderRadius.circular(10),
@@ -75,7 +91,13 @@ class _ActivityScreenState extends State<ActivityScreen> {
                             tab,
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black,
+                              color: isSelected
+                                  ? (theme.brightness == Brightness.dark
+                                        ? Colors.black
+                                        : Colors.white)
+                                  : (theme.brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black),
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                             ),
@@ -98,6 +120,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
   }
 
   List<Widget> _buildActivityItems() {
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
     final activities = [
       {
         'username': 'john_mobbin',
@@ -196,18 +220,24 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
       widgets.add(
         Container(
-          color: Colors.white,
+          color: colors.surface,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 프로필 이미지 (오버레이 아이콘 포함)
               Stack(
+                clipBehavior: Clip.none,
                 children: [
                   Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey.shade300, width: 1),
+                      border: Border.all(
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.grey.shade700
+                            : Colors.grey.shade300,
+                        width: 1,
+                      ),
                     ),
                     child: ClipOval(
                       child: CachedNetworkImage(
@@ -218,13 +248,17 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         placeholder: (context, url) => Container(
                           width: 40,
                           height: 40,
-                          color: Colors.grey.shade200,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.grey.shade800
+                              : Colors.grey.shade200,
                           child: const Icon(Icons.person, color: Colors.grey),
                         ),
                         errorWidget: (context, url, error) => Container(
                           width: 40,
                           height: 40,
-                          color: Colors.grey.shade200,
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.grey.shade800
+                              : Colors.grey.shade200,
                           child: const Icon(Icons.person, color: Colors.grey),
                         ),
                       ),
@@ -262,10 +296,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
                       children: [
                         Text(
                           activity['username'] as String,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
-                            color: Colors.black,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ),
                         if (activity['isVerified'] == true) ...[
@@ -280,7 +316,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         Text(
                           activity['timeAgo'] as String,
                           style: TextStyle(
-                            color: Colors.grey.shade600,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.grey.shade400
+                                : Colors.grey.shade600,
                             fontSize: 14,
                           ),
                         ),
@@ -312,8 +350,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
                       const SizedBox(height: 2),
                       Text(
                         activity['replyContent'] as String,
-                        style: const TextStyle(
-                          color: Colors.black,
+                        style: TextStyle(
+                          color: theme.brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
                           fontSize: 14,
                         ),
                       ),
@@ -326,8 +366,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         activity['content'] as String,
                         style: TextStyle(
                           color: activity['category'] == 'likes'
-                              ? Colors.grey.shade600
-                              : Colors.black,
+                              ? (theme.brightness == Brightness.dark
+                                    ? Colors.grey.shade400
+                                    : Colors.grey.shade600)
+                              : (theme.brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black),
                           fontSize: 14,
                         ),
                       ),
@@ -343,14 +387,21 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey.shade300, width: 1),
+                    color: colors.surface,
+                    border: Border.all(
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.grey.shade700
+                          : Colors.grey.shade300,
+                      width: 1,
+                    ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     activity['buttonText'] as String,
                     style: TextStyle(
-                      color: Colors.grey.shade600,
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade600,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
@@ -364,7 +415,14 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
       // 구분선 추가 (마지막 항목 제외)
       if (i < filteredActivities.length - 1) {
-        widgets.add(Container(height: 1, color: Colors.grey.shade200));
+        widgets.add(
+          Container(
+            height: 1,
+            color: theme.brightness == Brightness.dark
+                ? Colors.grey.shade700
+                : Colors.grey.shade200,
+          ),
+        );
       }
     }
 

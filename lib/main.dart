@@ -79,8 +79,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colors.surface,
       body: Stack(
         children: [
           Offstage(
@@ -98,7 +101,7 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: SafeArea(
         top: false,
         child: Container(
-          color: Colors.white,
+          color: colors.surface,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -151,16 +154,21 @@ class _NavIcon extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  static const _iconSize = 24.0;
-  static const _inactive = Color(0xFFC7C7CC);
-  static const _active = Colors.black;
+  static const double _iconSize = 24.0;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final activeColor = theme.brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
+    final inactiveColor = theme.brightness == Brightness.dark
+        ? Colors.grey.shade400
+        : const Color(0xFFC7C7CC);
     return IconButton(
       onPressed: onTap,
       iconSize: _iconSize,
-      color: selected ? _active : _inactive,
+      color: selected ? activeColor : inactiveColor,
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       padding: EdgeInsets.zero,

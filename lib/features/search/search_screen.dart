@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../theme.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -21,8 +22,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colors.surface,
       body: CustomScrollView(
         slivers: [
           // 앱바
@@ -30,16 +34,22 @@ class _SearchScreenState extends State<SearchScreen> {
             pinned: true,
             centerTitle: false,
             elevation: 0,
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            surfaceTintColor: Colors.white,
-            systemOverlayStyle: SystemUiOverlayStyle.dark,
-            title: const Text(
+            backgroundColor: colors.surface,
+            foregroundColor: theme.brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+            surfaceTintColor: colors.surface,
+            systemOverlayStyle: theme.brightness == Brightness.dark
+                ? SystemUiOverlayStyle.light
+                : SystemUiOverlayStyle.dark,
+            title: Text(
               'Search',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
               ),
             ),
             bottom: PreferredSize(
@@ -54,7 +64,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   placeholder: 'Search',
                   style: const TextStyle(fontSize: 16),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.grey.shade800
+                        : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -69,6 +81,8 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   List<Widget> _buildSearchResults() {
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColors>()!;
     final accounts = [
       {
         'username': 'rjmithun',
@@ -137,7 +151,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
       widgets.add(
         Container(
-          color: Colors.white,
+          color: colors.surface,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,13 +168,17 @@ class _SearchScreenState extends State<SearchScreen> {
                     placeholder: (context, url) => Container(
                       width: 40,
                       height: 40,
-                      color: Colors.grey.shade200,
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade200,
                       child: const Icon(Icons.person, color: Colors.grey),
                     ),
                     errorWidget: (context, url, error) => Container(
                       width: 40,
                       height: 40,
-                      color: Colors.grey.shade200,
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade200,
                       child: const Icon(Icons.person, color: Colors.grey),
                     ),
                   ),
@@ -177,10 +195,12 @@ class _SearchScreenState extends State<SearchScreen> {
                       children: [
                         Text(
                           account['username'] as String,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
-                            color: Colors.black,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ),
                         if (account['isVerified'] == true) ...[
@@ -197,7 +217,9 @@ class _SearchScreenState extends State<SearchScreen> {
                     Text(
                       account['fullName'] as String,
                       style: TextStyle(
-                        color: Colors.grey.shade600,
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade600,
                         fontSize: 14,
                       ),
                     ),
@@ -237,8 +259,10 @@ class _SearchScreenState extends State<SearchScreen> {
                         ],
                         Text(
                           account['followers'] as String,
-                          style: const TextStyle(
-                            color: Colors.black,
+                          style: TextStyle(
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                             fontSize: 14,
                           ),
                         ),
@@ -256,14 +280,21 @@ class _SearchScreenState extends State<SearchScreen> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey.shade300, width: 1),
+                    color: colors.surface,
+                    border: Border.all(
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.grey.shade700
+                          : Colors.grey.shade300,
+                      width: 1,
+                    ),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Follow',
                     style: TextStyle(
-                      color: Colors.black,
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
@@ -277,7 +308,14 @@ class _SearchScreenState extends State<SearchScreen> {
 
       // 구분선 추가 (마지막 항목 제외)
       if (i < accounts.length - 1) {
-        widgets.add(Container(height: 1, color: Colors.grey.shade200));
+        widgets.add(
+          Container(
+            height: 1,
+            color: theme.brightness == Brightness.dark
+                ? Colors.grey.shade700
+                : Colors.grey.shade200,
+          ),
+        );
       }
     }
 

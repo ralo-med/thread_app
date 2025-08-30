@@ -129,7 +129,9 @@ class PostCard extends StatelessWidget {
                           alignment: Alignment.topCenter,
                           child: Container(
                             width: 2,
-                            color: Colors.grey.shade300,
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.grey.shade700
+                                : Colors.grey.shade300,
                           ),
                         ),
                       ),
